@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Feedback Wall</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="page-header">
+    <h1 class="page-title">Smart Feedback Wall</h1>
+    <p class="page-desc">Analyze the sentiment of a message using AI.</p>
+  </div>
+
+  <main class="form-card">
+    <form id="feedbackForm">
+      <div class="input-group">
+        <label for="feedbackInput" class="input-label">Enter a message</label>
+        <textarea
+          id="feedbackInput"
+          class="feedback-textarea"
+          placeholder="Write your message here..."
+          maxlength="500"
+          required
+        ></textarea>
+        <div class="textarea-footer">
+          <span id="charCount">0 / 500</span>
+        </div>
+      </div>
+      <button type="submit" id="submitBtn" class="submit-btn">Analyze Sentiment</button>
+    </form>
+  </main>
+  <section class="wall-section">
+    <h2 class="wall-title">Feedback Wall</h2>
+    <div class="wall-container">
+    <div id="feedbackWall"></div>
+   </div>
+  </section>
+  <script src="script.js"></script>
+</body>
+</html>
