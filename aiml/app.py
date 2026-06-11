@@ -17,9 +17,9 @@ def classify():
     scores = analyzer.polarity_scores(text)
     compound = scores['compound']
     
-    if compound >= 0.05:
+    if compound >= 0.3:      
         label = 'Positive'
-    elif compound <= -0.05:
+    elif compound <= -0.3:    
         label = 'Negative'
     else:
         label = 'Neutral'
