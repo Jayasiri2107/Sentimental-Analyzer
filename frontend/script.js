@@ -18,7 +18,7 @@ form.addEventListener("submit", async (e) => {
   submitBtn.textContent = "Analyzing...";
 
   try {
-    const response = await fetch("/messages", {
+    const response = await fetch("http://127.0.0.1:8000/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
@@ -68,7 +68,7 @@ function addCard(data) {
 
 async function loadMessages() {
   try {
-    const res = await fetch('/messages');
+    const res = await fetch("http://127.0.0.1:8000/messages");
     const messages = await res.json();
     messages.forEach(addCard);
   } catch (err) {
@@ -77,4 +77,3 @@ async function loadMessages() {
 }
 
 loadMessages();
-
