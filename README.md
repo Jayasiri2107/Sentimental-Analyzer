@@ -101,3 +101,71 @@ frontend/
 ## What We Learned
 
 We learned how to collaborate on a shared codebase using Git and GitHub, including creating branches, working with pull requests, handling merges, and coordinating changes while working on the same frontend project. We also learned the importance of communication, task division, and brainstorming ideas as a team before implementation. On the technical side, we learned how to connect a static frontend to a FastAPI backend using fetch, handle asynchronous requests with async/await, dynamically create and update DOM elements with JavaScript, and design a responsive, accessible UI with CSS.
+
+## Smart Feedback Wall — Backend
+
+A REST API built with FastAPI and PostgreSQL called Neon that receives messages from the frontend, sends them to an AI/ML model for sentiment analysis, and stores the results in a cloud database.
+
+## HOW IT WORKS
+
+The backend exposes two endpoints:
+
+POST /messages
+Receives a message from the frontend, forwards it to the AI/ML model which runs VADER sentiment analysis and returns a label. The message and its sentiment label are saved to the Neon PostgreSQL database. The full saved message is returned to the frontend as JSON.
+
+GET /messages
+Fetches all saved messages from the database, ordered newest first, and returns them as a JSON array to the frontend.
+
+## API CONTRACT
+
+POST   /messages   Request: { "text": "your message" }   Response: Full message object with sentiment
+GET    /messages   Request: None                          Response: Array of all messages
+
+Response shape:
+{
+    "id": 1,
+    "text": "great app!",
+    "sentiment": "Positive",
+    "timestamp": "2024-06-12T10:30:00Z"
+}
+
+Sentiment values are always exactly one of the following : Positive, Neutral, Negative
+
+Request:
+    { "message": "your text here" }
+
+Response:
+    { "sentiment": "Positive" }
+
+If the ML service is unavailable the backend defaults to Neutral so the app never crashes.
+
+## TECH STACK
+
+```
+FastAPI       — Web framework, handles HTTP requests and endpoints
+Neon          — Cloud hosted PostgreSQL, stores messages permanently
+psycopg2      — Connects Python to the Neon PostgreSQL database
+Pydantic      — Validates incoming and outgoing data shapes
+httpx         — Makes HTTP calls to the AI/ML microservice
+python-dotenv — Reads the .env file for the database URL
+uvicorn       — The server that runs FastAPI
+```
+---
+
+## FILE STRUCTURE
+
+```
+backend/
+├── main.py          — All API endpoints and ML service integration
+├── database.py      — Neon connection and table initialisation
+├── models.py        — Pydantic request and response models
+├── requirements.txt — All dependencies
+└── .env             — Database URL 
+```
+---
+
+## WHAT WE LEARNED
+
+On the technical side we learned how to build a API from scratch using FastAPI and connect it to a cloud PostgreSQL database called Neon. We also learned how to structure a backend into separate files such as main , database logic, and data models . We also learned how HTTP methods work (GET vs POST), how Pydantic validates data automatically, how to make HTTP calls from Python to another service using httpx, how to handle database connections safely with try and finally, and how environment variables ensure privacy . Lastly we learned how the backend coordinates between AI/ML and frontend and ensures smooth data flow.
+
+Since this project was built by three teams simultaneously , before writing any code we agreed on a shared API contract so all three parts could connect at the end. We used Git and GitHub to collaborate through branches and pull requests. The biggest lesson was that communication matters as much as code a change in one part of the system affects everyone else, so we had to think beyond our own files and consider the whole picture.
