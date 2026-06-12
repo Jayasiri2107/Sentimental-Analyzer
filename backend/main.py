@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
+import uvicorn
 
-from database import get_connection, init_db
-from models import inputMessage, outputMessage
+from backend.database import init_db, insert_message, fetch_messages
+from backend.models import inputMessage, outputMessage
 
 ml_url = "https://sentimental-rlvx.onrender.com/classify"
 
@@ -38,27 +39,10 @@ def post_message(body: inputMessage):
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
     sentiment = analyze_sentiment(body.text)
+    row = insert_message(body.text, sentiment)
 
-    conn = get_connection()
-
-    try:
-        cursor = conn.cursor()
-
-        cursor.execute(
-            """
-            INSERT INTO messages (text, sentiment)
-            VALUES (%s, %s)
-            RETURNING id, text, sentiment, timestamp
-            """,
-            (body.text, sentiment),
-        )
-
-        row = cursor.fetchone()
-        conn.commit()
-
-    finally:
-        cursor.close()
-        conn.close()
+    if not row:
+        raise HTTPException(status_code=500, detail="Failed to save message")
 
     return outputMessage(
         id=row[0],
@@ -69,27 +53,8 @@ def post_message(body: inputMessage):
 
 
 @app.get("/messages", response_model=list[outputMessage])
-def get_messages():
-
-    conn = get_connection()
-
-    try:
-        cursor = conn.cursor()
-
-        cursor.execute(
-            """
-            SELECT id, text, sentiment, timestamp
-            FROM messages
-            ORDER BY timestamp DESC
-            """
-        )
-
-        rows = cursor.fetchall()
-
-    finally:
-        cursor.close()
-        conn.close()
-
+def get_messages_route():
+    rows = fetch_messages()
     return [
         outputMessage(
             id=r[0],
@@ -99,3 +64,7 @@ def get_messages():
         )
         for r in rows
     ]
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
